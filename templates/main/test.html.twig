@@ -1,13 +1,57 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Series ! Test</title>
-</head>
-<body>
-<h1>Test !</h1>
-</body>
-</html>
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} | Test {% endblock %}
+
+{% block body %}
+    <h2>Test !</h2>
+    {# Création de variable #}
+    {% set name = "Sylvain" %}
+
+    <h2>Hello {{ name }} ! </h2>
+
+    {# création d'un tableau #}
+    {% set colors = ['blue', 'red', 'pink', 'purple'] %}
+
+    {# boucle for #}
+    {% for color in colors %}
+        <div style="background-color: {{ color }}">{{ color }} {{ loop.index }}</div>
+        {% if loop.first %}
+            <p>Premier passage</p>
+        {% endif %}
+    {% endfor %}
+
+    {# utilisation d'objet #}
+    {% set book = {
+        title : "Dune",
+        author : "Frank Herbert",
+        year : 1965
+    } %}
+
+    <p>{{ book.title }} écris par {{ book.author }}</p>
+
+    {# boucle sur clé/valeur #}
+    {% for key, val in book %}
+        <div>{{ key }} : {{ val }}</div>
+    {% endfor %}
+
+    {# quelques filtres #}
+
+    <div>Hello {{ name | upper }}</div>
+    <div>{{ colors | join('-') }}</div>
+    <div>{{ "now" | date('d/m/Y') }}</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
