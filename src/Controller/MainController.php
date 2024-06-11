@@ -29,6 +29,8 @@ class MainController extends AbstractController
 
         $name = '<h1>Sylvain</h1>';
 
+        dump($serie);
+
         return $this->render('main/test.html.twig', [
             'got' => $serie,
             'boys' => $serie2,
