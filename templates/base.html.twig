@@ -7,21 +7,35 @@
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
     {#    {% block stylesheets %} #}
     {#    {% endblock %} #}
-    {#    {% block javascripts %} #}
-    {#        {% block importmap %}{{ importmap('app') }}{% endblock %} #}
-    {#    {% endblock %} #}
+    {#        {% block javascripts %} #}
+    {#            {% block importmap %}{{ importmap('app') }}{% endblock %} #}
+    {#        {% endblock %} #}
+
+    <link rel="icon" href="{{ asset('images/icon.png') }}">
+    <link rel="stylesheet" href="{{ asset('styles/normalize.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+          rel="stylesheet">
 </head>
 <body>
-<header>
-    <h1>Welcome in Series !</h1>
-    {% include 'menu/nav.html.twig' %}
-</header>
-<main>
-    {% block body %}{% endblock %}
-</main>
-<footer>
-    {% include 'menu/nav.html.twig' %}
-    <div>&copy;SlyProd</div>
-</footer>
+<div class="container">
+    <header>
+        <h1>
+            <a href="{{ path('main_home') }}">
+                <img src="{{ asset('images/logo.svg') }}" alt="Series !">
+            </a>
+        </h1>
+        {% include 'menu/nav.html.twig' %}
+    </header>
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+    <footer>
+        {% include 'menu/nav.html.twig' %}
+        <div>&copy;SlyProd</div>
+    </footer>
+</div>
 </body>
 </html>
