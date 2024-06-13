@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Serie;
+use App\Form\SerieType;
 use App\Repository\SerieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -15,10 +17,10 @@ class SerieController extends AbstractController
     #[Route('', name: 'list')]
     public function list(SerieRepository $serieRepository): Response
     {
-//        $series = $serieRepository->findAll();
+        $series = $serieRepository->findAll();
 //        $series = $serieRepository->findBy([], ["popularity" => "DESC"], 50, 0);
 
-        $series = $serieRepository->findBestSeries();
+//        $series = $serieRepository->findBestSeries();
 
         return $this->render('series/list.html.twig', [
                 "series" => $series
@@ -31,7 +33,7 @@ class SerieController extends AbstractController
     {
         $serie = $serieRepository->find($id);
 
-        if(!$serie){
+        if (!$serie) {
             throw $this->createNotFoundException("Ooops ! Series not found !");
         }
 
@@ -41,41 +43,33 @@ class SerieController extends AbstractController
     }
 
     #[Route('/create', name: 'create')]
-    public function create(EntityManagerInterface $entityManager): Response
+    public function create(
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): Response
     {
+        //créé une instance de l'entité
         $serie = new Serie();
-        $serie
-            ->setName("House of dragons")
-            ->setBackdrop("backdrop.png")
-            ->setDateCreated(new \DateTime())
-            ->setGenres("Fantasy")
-            ->setFirstAirDate(new \DateTime("-2 year"))
-            ->setLastAirDate(new \DateTime("-1 year"))
-            ->setPopularity(800.00)
-            ->setPoster("poster.png")
-            ->setStatus("returning")
-            ->setTmdbId(12345)
-            ->setVote(8);
+        //création du formulaire associé a l'instance de serie
+        $serieForm = $this->createForm(SerieType::class, $serie);
 
         dump($serie);
-        //mets en file d'attente avant enregistrement
-        $entityManager->persist($serie);
-        //j'éxécute les requêtes
-        $entityManager->flush();
-        dump($serie);
+        dump($request);
+        //extraie des informations de la requête HTTP
+        $serieForm->handleRequest($request);
 
-        $serie->setName("Pokemon XYZ");
-        $entityManager->persist($serie);
-        $entityManager->flush();
+        if($serieForm->isSubmitted()){
+            dump($serie);
+            $entityManager->persist($serie);
+            $entityManager->flush();
 
-        dump($serie);
-
-        $entityManager->remove($serie);
-        $entityManager->flush();
-
-
+            $this->addFlash('success', 'Series added !');
+            return $this->redirectToRoute('series_detail', ['id' => $serie->getId()]);
+        }
         //TODO renvoyer un formulaire de création de série
-        return $this->render('series/create.html.twig');
+        return $this->render('series/create.html.twig', [
+            'serieForm' => $serieForm
+        ]);
     }
 
 

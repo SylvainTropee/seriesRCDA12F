@@ -1,4 +1,6 @@
 twig:
+#    permet d'appliquer le theme à tous les formulaires de votre application
+    form_theme: ['views/form_theme/form_theme.html.twig']
     file_name_pattern: '*.twig'
 
 when@test:
