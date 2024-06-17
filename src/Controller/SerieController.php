@@ -53,6 +53,8 @@ class SerieController extends AbstractController
             throw $this->createNotFoundException("Ooops ! Series not found !");
         }
 
+        dump($serie);
+
         return $this->render('series/detail.html.twig', [
             'serie' => $serie
         ]);
