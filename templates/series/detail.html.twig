@@ -9,7 +9,11 @@
         </div>
         <div class="serie-details-infos">
             <h2>{{ serie.name }}</h2>
-            <div><a class="link_button" href="{{ path('series_update', {'id': serie.id}) }}">Update</a></div>
+            <div>
+                <a class="link_button" href="{{ path('series_update', {'id': serie.id}) }}">Update</a>
+                <a onclick="return confirm('Etes-vous sûr de supprimer {{ serie.name }} ?')" class="link_button"
+                   href="{{ path('series_delete', {'id': serie.id}) }}">Delete</a>
+            </div>
             <div>User rating : {{ serie.vote }}</div>
             <div>Genres : {{ serie.genres }}</div>
             <div>Status : {{ serie.status }}</div>

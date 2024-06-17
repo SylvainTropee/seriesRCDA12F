@@ -60,6 +60,7 @@ class SerieController extends AbstractController
 
         if ($serieForm->isSubmitted() && $serieForm->isValid()) {
             dump($serie);
+            dd($request);
             $entityManager->persist($serie);
             $entityManager->flush();
 
@@ -104,6 +105,26 @@ class SerieController extends AbstractController
             'updateSerieForm' => $serieForm
         ]);
 
+    }
+
+    #[Route('/delete/{id}', name: 'delete')]
+    public function delete(
+        EntityManagerInterface $entityManager,
+        SerieRepository        $serieRepository,
+        int                    $id
+    ): Response{
+
+        $serie = $serieRepository->find($id);
+
+        if(!$serie){
+            throw $this->createNotFoundException("Serie not found !");
+        }
+
+        $entityManager->remove($serie);
+        $entityManager->flush();
+        $this->addFlash('success', 'Series deleted !');
+
+        return $this->redirectToRoute('series_list');
     }
 
 }
