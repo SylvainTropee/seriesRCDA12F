@@ -1,0 +1,6 @@
+<h2>{% block form_title %}{% endblock %}</h2>
+
+{{ form_start(serieForm) }}
+{{ form_widget(serieForm) }}
+<button>{% block form_label_submit %}{% endblock %}</button>
+{{ form_end(serieForm) }}

@@ -32,7 +32,6 @@ class SerieType extends AbstractType
                 'attr' => [
                     'class' => "machin"
                 ],
-
             ])
             ->add('vote')
             ->add('popularity')

@@ -5,10 +5,11 @@
 
     <div class="serie-details">
         <div>
-            <img src="{{ asset('images/posters/series/' ~ serie.poster) }}" alt="{{ serie.name }}">
+            <img class="link_button" src="{{ asset('images/posters/series/' ~ serie.poster) }}" alt="{{ serie.name }}">
         </div>
         <div class="serie-details-infos">
             <h2>{{ serie.name }}</h2>
+            <div><a class="link_button" href="{{ path('series_update', {'id': serie.id}) }}">Update</a></div>
             <div>User rating : {{ serie.vote }}</div>
             <div>Genres : {{ serie.genres }}</div>
             <div>Status : {{ serie.status }}</div>

@@ -45,7 +45,7 @@ class SerieController extends AbstractController
     #[Route('/create', name: 'create')]
     public function create(
         EntityManagerInterface $entityManager,
-        Request $request
+        Request                $request
     ): Response
     {
         //créé une instance de l'entité
@@ -58,7 +58,7 @@ class SerieController extends AbstractController
         //extraie des informations de la requête HTTP
         $serieForm->handleRequest($request);
 
-        if($serieForm->isSubmitted() && $serieForm->isValid()){
+        if ($serieForm->isSubmitted() && $serieForm->isValid()) {
             dump($serie);
             $entityManager->persist($serie);
             $entityManager->flush();
@@ -72,6 +72,39 @@ class SerieController extends AbstractController
         ]);
     }
 
+    #[Route('/update/{id}', name: 'update')]
+    public function update(
+        EntityManagerInterface $entityManager,
+        Request                $request,
+        SerieRepository        $serieRepository,
+        int                    $id
+    ): Response
+    {
+        $serie = $serieRepository->find($id);
+
+        if (!$serie) {
+            throw $this->createNotFoundException('Ooops ! Series not found !');
+        }
+
+        $serieForm = $this->createForm(SerieType::class, $serie);
+        $serieForm->handleRequest($request);
+
+        if ($serieForm->isSubmitted() && $serieForm->isValid()) {
+
+            $serie->setDateModified(new \DateTime());
+
+            $entityManager->persist($serie);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Series updated !');
+            return $this->redirectToRoute('series_detail', ['id' => $id]);
+        }
+
+        return $this->render('series/update.html.twig', [
+            'updateSerieForm' => $serieForm
+        ]);
+
+    }
 
 }
 
