@@ -11,6 +11,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\HasLifecycleCallbacks]
 class Serie
 {
+    const SERIE_PER_PAGE = 50;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
