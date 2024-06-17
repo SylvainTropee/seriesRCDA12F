@@ -7,6 +7,7 @@ use App\Form\SerieType;
 use App\Repository\SerieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -53,14 +54,21 @@ class SerieController extends AbstractController
         //création du formulaire associé a l'instance de serie
         $serieForm = $this->createForm(SerieType::class, $serie);
 
-        dump($serie);
-        dump($request);
         //extraie des informations de la requête HTTP
         $serieForm->handleRequest($request);
 
         if ($serieForm->isSubmitted() && $serieForm->isValid()) {
-            dump($serie);
-            dd($request);
+            /**
+             * @var UploadedFile $file
+             */
+            //récupération du fichier de type UploadedFile
+            $file = $serieForm->get('poster')->getData();
+            //création de son nom
+            $newFilename = $serie->getName() . '-' . uniqid() . '.' . $file->guessExtension();
+            //sauvegarde dans le bon répertoire en le renomant
+            $file->move($this->getParameter('serie_poster_directory'), $newFilename);
+            //setté le nouveau nom dans l'objet
+            $serie->setPoster($newFilename);
             $entityManager->persist($serie);
             $entityManager->flush();
 
@@ -112,11 +120,12 @@ class SerieController extends AbstractController
         EntityManagerInterface $entityManager,
         SerieRepository        $serieRepository,
         int                    $id
-    ): Response{
+    ): Response
+    {
 
         $serie = $serieRepository->find($id);
 
-        if(!$serie){
+        if (!$serie) {
             throw $this->createNotFoundException("Serie not found !");
         }
 
