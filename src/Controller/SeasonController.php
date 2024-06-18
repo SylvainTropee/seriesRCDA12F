@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Season;
+use App\Entity\Serie;
 use App\Form\SeasonType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,13 +14,20 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/season', name: 'season_')]
 class SeasonController extends AbstractController
 {
+    #[Route('/create/{serie}', name: 'create_with_serie')]
     #[Route('/create', name: 'create')]
     public function create(
         EntityManagerInterface $entityManager,
-        Request                $request
+        Request                $request,
+        Serie $serie = null
     ): Response
     {
         $season = new Season();
+        //permet de passer des données préremplis à mon formulaire
+        //ici permet de présélectionner la bonne série dans le select
+        if($serie){
+            $season->setSerie($serie);
+        }
         $seasonForm = $this->createForm(SeasonType::class, $season);
 
         $seasonForm->handleRequest($request);
