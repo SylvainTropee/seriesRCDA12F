@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Serie;
 use App\Form\SerieType;
 use App\Repository\SerieRepository;
+use App\Utils\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -22,13 +23,13 @@ class SerieController extends AbstractController
         int             $page = 1
     ): Response
     {
-        if($page < 1){
+        if ($page < 1) {
             $page = 1;
         }
 
         $nbSeriesMax = $serieRepository->count([]);
         $maxPage = ceil($nbSeriesMax / Serie::SERIE_PER_PAGE);
-        if($page > $maxPage){
+        if ($page > $maxPage) {
             $page = $maxPage;
         }
 
@@ -65,7 +66,8 @@ class SerieController extends AbstractController
     #[IsGranted('ROLE_USER')]
     public function create(
         EntityManagerInterface $entityManager,
-        Request                $request
+        Request                $request,
+        FileUploader           $fileUploader
     ): Response
     {
         //créé une instance de l'entité
@@ -82,10 +84,7 @@ class SerieController extends AbstractController
              */
             //récupération du fichier de type UploadedFile
             $file = $serieForm->get('poster')->getData();
-            //création de son nom
-            $newFilename = $serie->getName() . '-' . uniqid() . '.' . $file->guessExtension();
-            //sauvegarde dans le bon répertoire en le renomant
-            $file->move($this->getParameter('serie_poster_directory'), $newFilename);
+            $newFilename = $fileUploader->upload($file, $this->getParameter('serie_poster_directory'), $serie->getName());
             //setté le nouveau nom dans l'objet
             $serie->setPoster($newFilename);
             $entityManager->persist($serie);
