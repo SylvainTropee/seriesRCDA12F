@@ -77,6 +77,10 @@ class Serie
     #[Groups('serie')]
     private Collection $seasons;
 
+    #[ORM\Column]
+    #[Groups('serie')]
+    private ?int $nbLike = null;
+
     public function __construct()
     {
         $this->seasons = new ArrayCollection();
@@ -275,6 +279,18 @@ class Serie
                 $season->setSerie(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getNbLike(): ?int
+    {
+        return $this->nbLike;
+    }
+
+    public function setNbLike(int $nbLike): static
+    {
+        $this->nbLike = $nbLike;
 
         return $this;
     }

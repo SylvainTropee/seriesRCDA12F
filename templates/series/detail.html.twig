@@ -2,7 +2,6 @@
 
 {% block body %}
 
-
     <div class="serie-details">
         <div>
             <img class="link_button" src="{{ asset('images/posters/series/' ~ serie.poster) }}" alt="{{ serie.name }}">
@@ -16,9 +15,13 @@
                        href="{{ path('series_delete', {'id': serie.id}) }}">Delete</a>
                     <a class="link_button" href="{{ path('season_create_with_serie', {'serie': serie.id}) }}">Add a new
                         season</a>
+                    <div class="flex_div">
+                        <button class="like-button" value="1">Like</button>
+                        <button class="like-button" value="0">Dislike</button>
+                    </div>
                 </div>
             {% endif %}
-            <div>User rating : {{ serie.vote }}</div>
+            <div>User rating : {{ serie.vote }} / Like(s) : <span id="nbLike">{{ serie.nbLike }}</span></div>
             <div>Genres : {{ serie.genres }}</div>
             <div>Status : {{ serie.status }}</div>
             <div>Aired from {{ serie.firstAirDate | date("Y-m-d") }} to {{ serie.lastAirDate | date("Y-m-d") }}</div>
@@ -40,6 +43,13 @@
         {% endfor %}
     </div>
 
+    <div>
+        {% for comment in comments %}
+            <div><i>{{ comment.email }}</i></div>
+            <div>{{ comment.body }}</div>
+        {% endfor %}
+    </div>
+
 
 {% endblock %}
 
@@ -52,6 +62,25 @@
     </style>
 {% endblock %}
 
+{% block extraJs %}
+    <script>
+        let buttons = document.querySelectorAll('.like-button')
+
+        buttons.forEach(function (item) {
+
+            item.addEventListener('click', function () {
+                console.log(this.value)
+                fetch('{{ path('api_series_update', {'id' : serie.id}) }}',
+                    {method: "PUT", body: JSON.stringify({"like": this.value})}
+                ).then(response => response.json())
+                    .then(data => {
+                        document.getElementById('nbLike').innerText = data.nbLike
+                    })
+            })
+        })
+
+    </script>
+{% endblock %}
 
 
 

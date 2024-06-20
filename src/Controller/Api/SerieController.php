@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/series', name: 'api_series_')]
 class SerieController extends AbstractController
@@ -27,8 +28,8 @@ class SerieController extends AbstractController
 
     #[Route('/{id}', name: 'one', methods: 'GET')]
     public function retrieveOne(
-        int $id,
-        SerieRepository $serieRepository,
+        int                 $id,
+        SerieRepository     $serieRepository,
         SerializerInterface $serializer
     ): Response
     {
@@ -47,9 +48,10 @@ class SerieController extends AbstractController
 
     #[Route('', name: 'create', methods: 'POST')]
     public function create(
-        Request $request,
-        SerializerInterface $serializer,
-        EntityManagerInterface $entityManager
+        Request                $request,
+        SerializerInterface    $serializer,
+        EntityManagerInterface $entityManager,
+        ValidatorInterface     $validator
     ): Response
     {
         //extraie le body de la requête
@@ -62,6 +64,13 @@ class SerieController extends AbstractController
 
         //permet de transformer le json dans un format entité
         $serie = $serializer->deserialize($data, Serie::class, 'json');
+
+        $errors = $validator->validate($serie);
+        if (count($errors) > 0) {
+            //$errorsJson = $serializer->serialize($errors, 'json');
+            return $this->json($errors, Response::HTTP_BAD_REQUEST);
+        }
+
         $serie->setDateCreated(new \DateTime());
 
         $entityManager->persist($serie);
@@ -83,9 +92,32 @@ class SerieController extends AbstractController
 
 
     #[Route('/{id}', name: 'update', methods: ['PUT', 'PATCH'])]
-    public function update(int $id): Response
+    public function update(int                    $id,
+                           Request                $request,
+                           SerieRepository        $serieRepository,
+                           EntityManagerInterface $entityManager
+    ): Response
     {
-        //TODO update une série
+        //j'extraie le body de la requête
+        $json = $request->getContent();
+
+        //transforme en tableau ou objet
+        $data = json_decode($json, true);
+
+        $serie = $serieRepository->find($id);
+
+        //je modifie l'attribut nbLike
+        if($data['like'] == 1){
+            $serie->setNbLike($serie->getNbLike() + 1);
+        }else{
+            $serie->setNbLike($serie->getNbLike() - 1);
+        }
+
+        $entityManager->persist($serie);
+        $entityManager->flush();
+
+        //je retourne l'objet modifié
+        return $this->json($serie, Response::HTTP_OK, [], ['groups' => 'serie']);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]

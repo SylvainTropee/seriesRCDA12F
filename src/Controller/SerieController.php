@@ -55,10 +55,13 @@ class SerieController extends AbstractController
             throw $this->createNotFoundException("Ooops ! Series not found !");
         }
 
-        dump($serie);
+        //permet de faire des requêtes GET facilement
+        $json = file_get_contents('https://jsonplaceholder.typicode.com/comments');
+        $comments = json_decode($json, true);
 
         return $this->render('series/detail.html.twig', [
-            'serie' => $serie
+            'serie' => $serie,
+            'comments' => $comments
         ]);
     }
 
